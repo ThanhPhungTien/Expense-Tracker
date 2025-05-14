@@ -9,6 +9,8 @@ data class User(
         @Column(nullable = false) val name: String,
         @Column(nullable = false, unique = true) val email: String,
         @Column(nullable = false, unique = true) val phone: String,
+        val familyId: Long? = null,
+        val isFamilyAdmin: Boolean = false
 ) {
         constructor() : this(name = "", email = "", phone = "")
 }
