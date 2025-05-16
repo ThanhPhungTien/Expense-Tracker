@@ -1,38 +1,65 @@
 package vn.thanhpt.expense_tracker.user
 
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.*
-import vn.thanhpt.expense_tracker.family.Family
 
 @RestController
 @RequestMapping("/users")
+@Tag(name = "User", description = "User management APIs")
 class UserController(private val userService: UserService) {
-    @GetMapping fun getAll() = userService.findAll()
+        @Operation(summary = "Get all users", description = "Retrieves a list of all users")
+        @ApiResponses(
+                value =
+                        [
+                                ApiResponse(
+                                        responseCode = "200",
+                                        description = "Successfully retrieved all users"
+                                ),
+                                ApiResponse(
+                                        responseCode = "500",
+                                        description = "Internal server error"
+                                )]
+        )
+        @GetMapping
+        fun getAll() = userService.findAll()
 
-    @GetMapping("/{id}") fun getById(@PathVariable id: Long) = userService.findById(id)
+        @Operation(summary = "Get user by ID", description = "Retrieves a user by their ID")
+        @ApiResponses(
+                value =
+                        [
+                                ApiResponse(
+                                        responseCode = "200",
+                                        description = "Successfully retrieved the user"
+                                ),
+                                ApiResponse(responseCode = "404", description = "User not found"),
+                                ApiResponse(
+                                        responseCode = "500",
+                                        description = "Internal server error"
+                                )]
+        )
+        @GetMapping("/{id}")
+        fun getById(@Parameter(description = "ID of the user to retrieve") @PathVariable id: Long) =
+                userService.findById(id)
 
-    @PostMapping fun create(@RequestBody user: User) = userService.save(user)
-
-    @PutMapping("/{id}")
-    fun update(@PathVariable id: Long, @RequestBody user: User) = userService.update(id, user)
-
-    @DeleteMapping("/{id}") fun delete(@PathVariable id: Long) = userService.delete(id)
-
-    // Tìm kiếm user theo tag family
-    @GetMapping("/search/family-tag")
-    fun findByFamilyTag(@RequestParam tag: String) = userService.findByFamilyTagLike(tag)
-
-    // Tạo family mới, userId là người tạo (admin)
-    @PostMapping("/{userId}/create-family")
-    fun createFamily(@PathVariable userId: Long, @RequestBody family: Family) =
-            userService.createFamily(userId, family)
-
-    // Thêm thành viên vào family (chỉ admin)
-    @PostMapping("/{adminId}/add-member/{memberId}")
-    fun addMember(@PathVariable adminId: Long, @PathVariable memberId: Long) =
-            userService.addMemberToFamily(adminId, memberId)
-
-    // Xoá thành viên khỏi family (chỉ admin)
-    @PostMapping("/{adminId}/remove-member/{memberId}")
-    fun removeMember(@PathVariable adminId: Long, @PathVariable memberId: Long) =
-            userService.removeMemberFromFamily(adminId, memberId)
+        @Operation(summary = "Delete user", description = "Deletes a user by their ID")
+        @ApiResponses(
+                value =
+                        [
+                                ApiResponse(
+                                        responseCode = "204",
+                                        description = "Successfully deleted the user"
+                                ),
+                                ApiResponse(responseCode = "404", description = "User not found"),
+                                ApiResponse(
+                                        responseCode = "500",
+                                        description = "Internal server error"
+                                )]
+        )
+        @DeleteMapping("/{id}")
+        fun delete(@Parameter(description = "ID of the user to delete") @PathVariable id: Long) =
+                userService.deleteUser(id)
 }

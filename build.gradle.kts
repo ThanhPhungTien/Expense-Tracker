@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
 	kotlin("jvm") version "2.0.0"
 	kotlin("plugin.spring") version "1.9.25"
@@ -34,14 +36,23 @@ dependencies {
 	testImplementation("org.springframework.security:spring-security-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	implementation("jakarta.persistence:jakarta.persistence-api")
+	
+	// SpringDoc OpenAPI dependencies
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.4.0")
+	implementation("org.springdoc:springdoc-openapi-starter-common:2.4.0")
+
+	// JWT dependencies
+	implementation("io.jsonwebtoken:jjwt-api:0.11.5")
+	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
+	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
 }
 
 kotlin {
-
+	jvmToolchain(17)
 	compilerOptions {
 		freeCompilerArgs.addAll("-Xjsr305=strict")
+		jvmTarget.set(JvmTarget.JVM_17)
 	}
-
 }
 
 jte {
@@ -51,5 +62,4 @@ jte {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
-	
 }
