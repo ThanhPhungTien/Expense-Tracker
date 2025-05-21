@@ -1,14 +1,22 @@
-# Sử dụng JDK 17 chính thức và nhẹ
+# Stage 1: Build JAR
+FROM gradle:8.4-jdk17 AS builder
+
+# Copy toàn bộ project vào container
+COPY . /home/app
+
+WORKDIR /home/app
+
+# Build file JAR
+RUN gradle build --no-daemon
+
+# Stage 2: Run JAR
 FROM eclipse-temurin:17-jdk-alpine
 
-# Tạo thư mục app trong container
 WORKDIR /app
 
-# Copy file JAR đã build vào container
-COPY build/libs/expense_tracker-0.0.1-SNAPSHOT.jar app.jar
+# Copy JAR từ stage build
+COPY --from=builder /home/app/build/libs/*.jar app.jar
 
-# Expose port ứng dụng (Render sẽ map cổng 8080 theo mặc định)
 EXPOSE 8080
 
-# Cấu hình entrypoint để chạy ứng dụng Spring Boot
 ENTRYPOINT ["java", "-jar", "app.jar"]
