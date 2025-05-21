@@ -13,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import vn.thanhpt.expense_tracker.auth.CustomAuthenticationEntryPoint
 import vn.thanhpt.expense_tracker.auth.CustomUserDetailsService
 import vn.thanhpt.expense_tracker.auth.JwtAuthenticationFilter
 
@@ -20,7 +21,8 @@ import vn.thanhpt.expense_tracker.auth.JwtAuthenticationFilter
 @EnableWebSecurity
 class SecurityConfig(
         private val jwtAuthFilter: JwtAuthenticationFilter,
-        private val userDetailsService: CustomUserDetailsService
+        private val userDetailsService: CustomUserDetailsService,
+        private val authenticationEntryPoint: CustomAuthenticationEntryPoint
 ) {
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
@@ -42,6 +44,7 @@ class SecurityConfig(
                 .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter::class.java)
+                .exceptionHandling { it.authenticationEntryPoint(authenticationEntryPoint) }
 
         return http.build()
     }
